@@ -5,9 +5,15 @@ import Home from "./Home.jsx";
 import Header from "./Header.jsx";
 
 function App() {
+
+    function selectCity(searchSuggName){
+        console.log("Ausgewählte Stadt: ", searchSuggName);
+
+    }
+
   return (
     <Router>
-        <Header />
+        <Header selectCity={selectCity} />
       <div>
         <Routes>
           <Route path={"/"} element={<Home />}></Route>

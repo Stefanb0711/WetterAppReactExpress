@@ -1,12 +1,13 @@
 import React, {useState, useEffect} from "react";
 import axios from "axios";
 
-function Header(){
+function Header(props){
 
 
 
     const [input, setInput] = useState("");
     const [searchSuggestions, setSearchSuggestions] = useState([]);
+    const [onClickedSearchSuggestionText, setOnClickedSearchSuggestionText] = useState("");
 
     const apiKey = "e8abe8733cbb04043b9c0df08f1a617d";
 
@@ -62,6 +63,12 @@ function Header(){
 
     }
 
+    function selectCity(searchSuggName){
+
+        //console.log("Ausgewählte Stadt: ", searchSuggName);
+        props.selectCity(searchSuggName);
+    }
+
     return (
         <header class="p-3 mb-3">
             <div class="container">
@@ -74,8 +81,6 @@ function Header(){
                         <li><a href="#" class="nav-link px-2 link-secondary">Start</a></li>
 
                     </ul>
-
-
 
 
                     <div
@@ -91,7 +96,7 @@ function Header(){
                             {searchSuggestions.length > 0 && (
                                 <ul className="list-group">
                                     {searchSuggestions.map((searchSuggestion) => (
-                                        <li className="list-group-item"> {searchSuggestion["name"]} </li>
+                                        <li onClick={() => selectCity(searchSuggestion["name"])} className="list-group-item"> {searchSuggestion["name"]} </li>
                                     ))}
                                 </ul>
                             )}
