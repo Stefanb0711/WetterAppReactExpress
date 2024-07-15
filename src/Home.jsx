@@ -1,26 +1,46 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios";
+import Header from "./Header.jsx";
 
 function Home(){
 
 
-    const [weatherData, setWeatherData] = useState(null);
+    const [weatherData, setWeatherData] = useState({
+        oneWordDescription : "",
+        description : "",
+        temp : "",
+        humidity : ""
+    });
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [currentCity, setCurrentCity] = useState("");
 
     useEffect(() =>{
 
-        const city = "Berlin";
+
         const apiKey = "e8abe8733cbb04043b9c0df08f1a617d";
-        const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=de`;
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${currentCity}&appid=${apiKey}&units=metric&lang=de`;
         async function fetchWeather(){
             try{
 
             const response = await axios.get(url);
-            setWeatherData(response.data);
+            //setWeatherData(response.data);
             setLoading(false);
 
-            console.log("Wetterdaten: ", response.data);
+            const oneWordDescription = response.data["weather"][0]["main"];
+            const description = response.data["weather"][0]["description"];
+            const temp = response.data["main"]["temp"];
+            const humidity = response.data["main"]["humidity"];
+
+            setWeatherData({
+                oneWordDescription: oneWordDescription,
+                description: description,
+                temp: temp,
+                humidity : humidity
+            });
+
+
+
 
 
             } catch(err){
@@ -33,12 +53,31 @@ function Home(){
         fetchWeather();
 
 
-    }, []);
+    }, [currentCity]);
+
+    useEffect(() => {
+        console.log("OneWordDescription: ", weatherData["oneWordDescription"]);
+         console.log("Description: ", weatherData["description"]);
+         console.log("Temperature: ", weatherData["temp"]);
+
+    }, [weatherData]);
+
+
+    function selectCity(searchSuggName){
+        console.log("Ausgewählte Stadt: ", searchSuggName);
+        setCurrentCity(searchSuggName);
+
+        //axios.get("");
+
+    }
+
 
     if (loading) return <div>Loading...</div>;
 
     return (
          <div>
+             <Header selectCity={selectCity} />
+
             <p>Wetterdaten:   </p>
 
         </div>
