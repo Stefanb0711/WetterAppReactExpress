@@ -9,7 +9,8 @@ function Home(){
         oneWordDescription : "",
         description : "",
         temp : "",
-        humidity : ""
+        humidity : "",
+        icon : ""
     });
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -31,12 +32,14 @@ function Home(){
             const description = response.data["weather"][0]["description"];
             const temp = response.data["main"]["temp"];
             const humidity = response.data["main"]["humidity"];
+            const icon = "https://openweathermap.org/img/wn/" + response.data["weather"][0]["icon"] + ".png";
 
             setWeatherData({
                 oneWordDescription: oneWordDescription,
                 description: description,
                 temp: temp,
-                humidity : humidity
+                humidity : humidity,
+                icon: icon
             });
 
 
@@ -59,6 +62,7 @@ function Home(){
         console.log("OneWordDescription: ", weatherData["oneWordDescription"]);
          console.log("Description: ", weatherData["description"]);
          console.log("Temperature: ", weatherData["temp"]);
+         console.log("Icon: ", weatherData["icon"]);
 
     }, [weatherData]);
 
