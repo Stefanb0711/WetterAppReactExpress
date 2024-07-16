@@ -1,92 +1,1 @@
-import React, {useEffect, useState} from "react";
-import axios from "axios";
-import Header from "./Header.jsx";
-
-function Home(){
-
-
-    const [weatherData, setWeatherData] = useState({
-        oneWordDescription : "",
-        description : "",
-        temp : "",
-        humidity : "",
-        icon : ""
-    });
-    const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [currentCity, setCurrentCity] = useState("");
-
-    useEffect(() =>{
-
-
-        const apiKey = "e8abe8733cbb04043b9c0df08f1a617d";
-        const url = `https://api.openweathermap.org/data/2.5/weather?q=${currentCity}&appid=${apiKey}&units=metric&lang=de`;
-        async function fetchWeather(){
-            try{
-
-            const response = await axios.get(url);
-            //setWeatherData(response.data);
-            setLoading(false);
-
-            const oneWordDescription = response.data["weather"][0]["main"];
-            const description = response.data["weather"][0]["description"];
-            const temp = response.data["main"]["temp"];
-            const humidity = response.data["main"]["humidity"];
-            const icon = "https://openweathermap.org/img/wn/" + response.data["weather"][0]["icon"] + ".png";
-
-            setWeatherData({
-                oneWordDescription: oneWordDescription,
-                description: description,
-                temp: temp,
-                humidity : humidity,
-                icon: icon
-            });
-
-
-
-
-
-            } catch(err){
-                console.error(err);
-                setLoading(false);
-                setError(err);
-            }
-        }
-
-        fetchWeather();
-
-
-    }, [currentCity]);
-
-    useEffect(() => {
-        console.log("OneWordDescription: ", weatherData["oneWordDescription"]);
-         console.log("Description: ", weatherData["description"]);
-         console.log("Temperature: ", weatherData["temp"]);
-         console.log("Icon: ", weatherData["icon"]);
-
-    }, [weatherData]);
-
-
-    function selectCity(searchSuggName){
-        console.log("Ausgewählte Stadt: ", searchSuggName);
-        setCurrentCity(searchSuggName);
-
-        //axios.get("");
-
-    }
-
-
-    if (loading) return <div>Loading...</div>;
-
-    return (
-         <div>
-             <Header selectCity={selectCity} />
-
-            <p>Wetterdaten:   </p>
-
-        </div>
-
-    );
-}
-
-export default Home;
+import React, {useEffect, useState} from "react";import axios from "axios";import Header from "./Header.jsx";import WeatherCard from "./WeatherCard.jsx";function Home(){    const [weatherData, setWeatherData] = useState({        oneWordDescription : "",        description : "",        temp : "",        humidity : "",        icon : ""    });    const [error, setError] = useState(false);    const [loading, setLoading] = useState(true);    const [currentCity, setCurrentCity] = useState("");    const [noData, setNoData] = useState(false);    useEffect(() =>{        const apiKey = "e8abe8733cbb04043b9c0df08f1a617d";        const url = `https://api.openweathermap.org/data/2.5/weather?q=${currentCity}&appid=${apiKey}&units=metric&lang=de`;        async function fetchWeather(){            try{            const response = await axios.get(url);            console.log("Responsedata: ", response.data);            //setWeatherData(response.data);            //setLoading(false);            if (response.status >= 200 && response.status < 300) {                const oneWordDescription = response.data["weather"][0]["main"];                const description = response.data["weather"][0]["description"];                const temp = response.data["main"]["temp"];                const humidity = response.data["main"]["humidity"];                const icon = "https://openweathermap.org/img/wn/" + response.data["weather"][0]["icon"] + ".png";                if (response.data === []){                    setError(true);                }                setWeatherData({                    oneWordDescription: oneWordDescription,                    description: description,                    temp: temp,                    humidity : humidity,                    icon: icon                });            } else {                setError(true);            }            } catch(err){                console.error(err);                setLoading(false);                //setError(err);            }        }        setNoData(false);        fetchWeather();    }, [currentCity]);    useEffect(() => {        console.log("OneWordDescription: ", weatherData["oneWordDescription"]);         console.log("Description: ", weatherData["description"]);         console.log("Temperature: ", weatherData["temp"]);         console.log("Icon: ", weatherData["icon"]);         if (weatherData["oneWordDescription"] === ""){             setNoData(true);         }    }, [weatherData]);    function selectCity(searchSuggName){        console.log("Ausgewählte Stadt: ", searchSuggName);        setCurrentCity(searchSuggName);        //axios.get("");    }    if (loading) return <div>Loading...</div>;    //if (error) return <div> Fehler beim laden der Stadt. Überprüfen Sie ihren Suchbegriff.</div>    if (noData) return <div>        <Header selectCity={selectCity}/>        <div>Geben Sie eine Stadt in der Suchleiste ein für Wetterinformationen.</div>    </div>    return (        <div>            <Header selectCity={selectCity}/>            {error ? <div> Fehler beim laden der Stadt. Überprüfen Sie ihren Suchbegriff.</div> :                 <div style={{marginLeft: "40px"}}>                     <WeatherCard                     city={currentCity}                     title = {weatherData["oneWordDescription"]}                    icon = {weatherData["icon"]}                    description = {weatherData["description"]}                    temperature = {weatherData["temp"]}                    humidity = {weatherData["humidity"]}                    />                 </div>             }        </div>    );}export default Home;
